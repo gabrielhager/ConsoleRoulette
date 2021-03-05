@@ -10,19 +10,16 @@ namespace ConsoleRoulette
         }
         static void Main(string[] args)
         {
-            PlayGame();
-            PlayGame();
-            PlayGame();
-            PlayGame();
-            PlayGame();
-            PlayGame();
-            //var colorName = (BoardColors)0;
-
-            //for (int i = 0; i < rouletteColors.Length; i++)
-            //{
-            //    colorName = (BoardColors)rouletteColors[i];
-            //    Console.WriteLine(rouletteWheelNumbers[i] + " " + colorName.ToString());
-            //}
+            string playAgain = "";
+            do
+            {
+                PlayGame();
+                Console.WriteLine("Play Again?\nY/N");
+                playAgain = Console.ReadLine();
+                playAgain = playAgain.ToLower();
+            } while (playAgain == "y");
+            
+           
         }
 
         public static int[] createRouletteWheelNumbersArray()
@@ -49,53 +46,66 @@ namespace ConsoleRoulette
 
         public static void PlayGame()
         {
-            Random rand = new Random();
-            int[] rouletteWheelNumbers = createRouletteWheelNumbersArray();
-            int[] rouletteColors = createColorArray();
-
-            Console.WriteLine("WELCOME TO ROULETTE!!!!\nCHOOSE A BET:");
-            Console.WriteLine("1. Number");
-            Console.WriteLine("2. Even/Odd");
-            Console.WriteLine("3. Red/Black");
-            Console.WriteLine("4. High/Low");
-            Console.WriteLine("5. Dozens");
-            Console.WriteLine("6. Columns");
-            Console.WriteLine("7. Streets");
-            Console.WriteLine("8. Double Rows");
-            Console.WriteLine("9. Splits");
-
-            int input = Int32.Parse(Console.ReadLine());
-            int rollResult = Roll(rand);
-
-            switch (input)
+            try
             {
-                case 1:
-                    BetNumber(rollResult);
-                    break;
-                case 2:
-                    BetEvenOdd(rollResult);
-                    break;
-                case 3:
-                    BetRedBlack(rollResult, rouletteWheelNumbers, rouletteColors);
-                    break;
-                case 4:
-                    BetHighLow(rollResult);
-                    break;
-                case 5:
-                    BetDozens(rollResult);
-                    break;
-                case 6:
-                    BetColumn(rollResult, rouletteWheelNumbers);
-                    break;
-                case 7:
-                    BetStreet(rollResult, rouletteWheelNumbers);
-                    break;
-                case 8:
-                    BetDoubleRows(rollResult, rouletteWheelNumbers);
-                    break;
-                case 9:
-                    BetSplits(rollResult, rouletteWheelNumbers);
-                    break;
+                Random rand = new Random();
+                int[] rouletteWheelNumbers = createRouletteWheelNumbersArray();
+                int[] rouletteColors = createColorArray();
+
+                Console.WriteLine("WELCOME TO ROULETTE!!!!\nCHOOSE A BET:");
+                Console.WriteLine("1. Number");
+                Console.WriteLine("2. Even/Odd");
+                Console.WriteLine("3. Red/Black");
+                Console.WriteLine("4. High/Low");
+                Console.WriteLine("5. Dozens");
+                Console.WriteLine("6. Columns");
+                Console.WriteLine("7. Streets");
+                Console.WriteLine("8. Double Rows");
+                Console.WriteLine("9. Splits");
+                Console.WriteLine("10. Corners");
+
+                int input = Int32.Parse(Console.ReadLine());
+                int rollResult = Roll(rand);
+
+                switch (input)
+                {
+                    case 1:
+                        BetNumber(rollResult);
+                        break;
+                    case 2:
+                        BetEvenOdd(rollResult);
+                        break;
+                    case 3:
+                        BetRedBlack(rollResult, rouletteWheelNumbers, rouletteColors);
+                        break;
+                    case 4:
+                        BetHighLow(rollResult);
+                        break;
+                    case 5:
+                        BetDozens(rollResult);
+                        break;
+                    case 6:
+                        BetColumn(rollResult, rouletteWheelNumbers);
+                        break;
+                    case 7:
+                        BetStreet(rollResult, rouletteWheelNumbers);
+                        break;
+                    case 8:
+                        BetDoubleRows(rollResult, rouletteWheelNumbers);
+                        break;
+                    case 9:
+                        BetSplits(rollResult, rouletteWheelNumbers);
+                        break;
+                    case 10:
+                        BetCorner(rollResult, rouletteWheelNumbers);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid Input.");
+                        break;
+                }
+            } catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
         public static void BetNumber(int resultOfRoll)
@@ -453,6 +463,212 @@ namespace ConsoleRoulette
 
 
         }
+        public static void PrintBoard(int[] numbers)
+        {
+            char row = 'a';
+            Console.WriteLine("\t_______ 0 ______ 00_______");
+            Console.WriteLine("\t__________________________");
+            Console.WriteLine("\t_______ 1 ______ 2 _______");
+            Console.Write("\t");
+            for (int i = 1; i < numbers.Length - 1; i++)
+            {
+                
+                if(i<10)
+                {
+                    Console.Write($"____{numbers[i]}___ ");
+                }
+                else Console.Write($"___{numbers[i]}___ ");
+
+                if (i % 3 == 0 && i <numbers.Length - 2)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"{row++}\t________*________*________");
+                    Console.Write("\t");
+                }
+            }
+            Console.WriteLine("\n\t__________________________");
+        }
+        public static void YouWin(string bet, int winNum) => Console.WriteLine($"You bet on the {bet} corner! The ball landed on {winNum}, you win!");
+        public static void YouLose(string bet, int winNum) => Console.WriteLine($"You bet on the {bet} corner! The ball landed in {winNum}, so you lose comrade!");
+        public static void BetCorner(int roll, int[] wheelNumbers)
+        {
+            Console.WriteLine("Here is the board you will need for the Corner Bet");
+            PrintBoard(wheelNumbers);
+
+            string corner = "";
+            do
+            {
+                Console.WriteLine("Please select one of the corners listed above (e.g. A1, A2, G1, etc.): ");
+                corner = Console.ReadLine();
+
+                corner = corner.ToUpper();
+
+                switch (corner)
+                {
+                    case "A1":
+                        if (roll == 1 || roll == 2 || roll == 4 || roll == 5)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "A2":
+                        if (roll == 2 || roll == 3 || roll == 5 || roll == 6)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "B1":
+                        if (roll == 4 || roll == 5 || roll == 7 || roll == 8)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "B2":
+                        if (roll == 5 || roll == 6 || roll == 8 || roll == 9)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "C1":
+                        if (roll == 7 || roll == 8 || roll == 10 || roll == 11)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "C2":
+                        if (roll == 8 || roll == 9 || roll == 11 || roll == 12)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "D1":
+                        if (roll == 10 || roll == 11 || roll == 13 || roll == 14)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "D2":
+                        if (roll == 11 || roll == 12 || roll == 14 || roll == 15)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "E1":
+                        if (roll == 13 || roll == 14 || roll == 16 || roll == 17)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "E2":
+                        if (roll == 14 || roll == 15 || roll == 17 || roll == 18)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "F1":
+                        if (roll == 16 || roll == 17 || roll == 19 || roll == 20)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "F2":
+                        if (roll == 17 || roll == 18 || roll == 20 || roll == 21)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "G1":
+                        if (roll == 19 || roll == 20 || roll == 22 || roll == 23)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "G2":
+                        if (roll == 20 || roll == 21 || roll == 23 || roll == 24)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "H1":
+                        if (roll == 22 || roll == 23 || roll == 25 || roll == 26)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "H2":
+                        if (roll == 23 || roll == 24 || roll == 26 || roll == 27)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "I1":
+                        if (roll == 25 || roll == 26 || roll == 28 || roll == 29)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "I2":
+                        if (roll == 26 || roll == 27 || roll == 29 || roll == 30)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "J1":
+                        if (roll == 28 || roll == 29 || roll == 31 || roll == 32)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "J2":
+                        if (roll == 29 || roll == 30 || roll == 32 || roll == 33)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "K1":
+                        if (roll == 31 || roll == 32 || roll == 34 || roll == 35)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    case "K2":
+                        if (roll == 32 || roll == 33 || roll == 35 || roll == 36)
+                        {
+                            YouWin(corner, roll);
+                        }
+                        else YouLose(corner, roll);
+                        break;
+                    default:
+                        Console.WriteLine("You have not entered a valid selection, please try again.");
+                        corner = "Not valid";
+                        break;
+                }
+            }
+            while (corner == "Not valid");
+        }
+
+
     }
 }
     
